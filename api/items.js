@@ -1,40 +1,27 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import connectDB from "../db.js";
 
 const ItemSchema = new mongoose.Schema({
-  namaBarang: String,
-  deskripsi: String,
-  lokasi: String,
-  tanggal: String,
-  status: {
-    type: String,
-    enum: ["hilang", "ditemukan", "diambil"],
-    default: "hilang"
+  name: String,
+  description: String,
+  status: String
+});
+
+const Item =
+  mongoose.models.Item || mongoose.model("Item", ItemSchema);
+
+export default async function handler(req, res) {
+  try {
+    await connectDB();
+
+    if (req.method === "GET") {
+      const items = await Item.find();
+      return res.status(200).json(items);
+    }
+
+    return res.status(405).json({ message: "Method not allowed" });
+  } catch (error) {
+    console.error("API ERROR:", error);
+    return res.status(500).json({ error: error.message });
   }
-});
-
-module.exports = mongoose.model("Item", ItemSchema);
-
-const express = require("express");
-const router = express.Router();
-const Item = require("../models/Item");
-
-// GET semua barang
-router.get("/", async (req, res) => {
-  const items = await Item.find();
-  res.json(items);
-});
-
-// POST barang hilang
-router.post("/", async (req, res) => {
-  const newItem = new Item(req.body);
-  await newItem.save();
-  res.json({ message: "Barang berhasil dilaporkan" });
-});
-
-// UPDATE status (ADMIN)
-router.put("/:id", async (req, res) => {
-  await Item.findByIdAndUpdate(req.params.id, req.body);
-  res.json({ message: "Status berhasil diubah" });
-});
-
-module.exports = router;
+}

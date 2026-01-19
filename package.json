@@ -1,15 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Lost and Found Kampus Backend",
+  "private": true,
   "type": "module",
-  "main": "db.js",
-  "scripts": {
-    "dev": "node db.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "mongoose": "^9.1.4"
   }
